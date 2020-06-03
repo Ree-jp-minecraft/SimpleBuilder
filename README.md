@@ -1,0 +1,2 @@
+# NukkitPlugin
+NukkitPlugin template
