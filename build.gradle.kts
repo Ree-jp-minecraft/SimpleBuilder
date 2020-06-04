@@ -66,6 +66,16 @@ nukkit {
                     description = "SimpleBuilder command permission"
                     default = net.minecrell.pluginyml.nukkit.NukkitPluginDescription.Permission.Default.TRUE
                 }
+                "simplebuilder.build.*" {
+                    description = "SimpleBuilder build permission"
+                    default = net.minecrell.pluginyml.nukkit.NukkitPluginDescription.Permission.Default.TRUE
+                    children {
+                        "simplebuilder.build.16" {
+                            description = "SimpleBuilder build limit permission"
+                            default = net.minecrell.pluginyml.nukkit.NukkitPluginDescription.Permission.Default.FALSE
+                        }
+                    }
+                }
             }
         }
     }
