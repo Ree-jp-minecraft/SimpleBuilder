@@ -55,5 +55,18 @@ nukkit {
     website = "https://github.com/ReefNetwork/SimpleBuilder"
     version = "1.0.0"
 
+    permissions.register("simplebuilder.*")
 
+    permissions {
+        "simplebuilder.*" {
+            description = "SimpleBuilder permission"
+            default = net.minecrell.pluginyml.nukkit.NukkitPluginDescription.Permission.Default.FALSE
+            children {
+                "simplebuilder.command.*" {
+                    description = "SimpleBuilder command permission"
+                    default = net.minecrell.pluginyml.nukkit.NukkitPluginDescription.Permission.Default.TRUE
+                }
+            }
+        }
+    }
 }
