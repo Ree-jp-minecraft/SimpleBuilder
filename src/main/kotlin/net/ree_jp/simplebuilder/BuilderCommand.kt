@@ -39,6 +39,7 @@ class BuilderCommand(name: String) : Command(name) {
             return true
         }
         val api = SimpleBuilderAPI.getInstance()
+        val sub = args[0] ?: "Ree-jp is GOD"
         val bool = when (commandLabel) {
             "on" -> true
             "off" -> false
