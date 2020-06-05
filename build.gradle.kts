@@ -48,7 +48,7 @@ tasks {
 
 nukkit {
     name = "SimpleBuilder"
-    main = "net.ree_jp.builder.SimpleBuilderPlugin"
+    main = "net.ree_jp.simplebuilder.SimpleBuilderPlugin"
     api = listOf("1.0.0")
     author = "Ree-jp"
     description = "SimpleBuilderServerPlugin"
