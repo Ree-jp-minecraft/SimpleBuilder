@@ -9,7 +9,7 @@
  * Copyright (c) 2020. Ree-jp.  All Rights Reserved.
  */
 
-package net.ree_jp.simplebuilder
+package net.ree_jp.simplebuilder.command
 
 import cn.nukkit.Player
 import cn.nukkit.command.Command
@@ -20,14 +20,14 @@ import net.ree_jp.simplebuilder.api.SimpleBuilderAPI
 class BuilderCommand(name: String) : Command(name) {
 
     init {
-        commandParameters["mode"] = arrayOf(
+        commandParameters["change_build_mode"] = arrayOf(
             CommandParameter(
-                "mode", true, arrayOf(
+                "change_build_mode", true, arrayOf(
                     "on", "off"
                 )
             )
         )
-        aliases = arrayOf("sb")
+        aliases = arrayOf("sb", "simplebuilder")
         permission = "simplebuilder.command.$name"
         description = "SimpleBuilder setting command"
     }
@@ -39,8 +39,7 @@ class BuilderCommand(name: String) : Command(name) {
             return true
         }
         val api = SimpleBuilderAPI.getInstance()
-        val sub = args[0] ?: "Ree-jp is GOD"
-        val bool = when (commandLabel) {
+        val bool = when (args[0] ?: "Ree-jp is GOD") {
             "on" -> true
             "off" -> false
             else -> !api.isBuilder(sender)
