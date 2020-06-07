@@ -12,6 +12,8 @@
 package net.ree_jp.simplebuilder
 
 import cn.nukkit.plugin.PluginBase
+import net.ree_jp.simplebuilder.command.BuilderCommand
+import net.ree_jp.simplebuilder.event.EventListener
 
 class SimpleBuilderPlugin : PluginBase() {
 
@@ -25,6 +27,10 @@ class SimpleBuilderPlugin : PluginBase() {
     }
 
     override fun onEnable() {
+        server.pluginManager.registerEvents(EventListener(), this)
+        server.commandMap.register("simplebuilder",
+            BuilderCommand("builder")
+        )
         super.onEnable()
     }
 }
