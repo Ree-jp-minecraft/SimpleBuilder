@@ -15,7 +15,6 @@ import cn.nukkit.Player
 import cn.nukkit.Server
 import cn.nukkit.block.Block
 import cn.nukkit.block.BlockAir
-import cn.nukkit.block.BlockEnderChest
 import cn.nukkit.event.EventHandler
 import cn.nukkit.event.EventPriority
 import cn.nukkit.event.Listener
@@ -26,7 +25,6 @@ import cn.nukkit.level.Position
 import cn.nukkit.level.particle.DustParticle
 import cn.nukkit.math.BlockFace
 import cn.nukkit.math.BlockVector3
-import cn.nukkit.math.Vector3
 import cn.nukkit.scheduler.TaskHandler
 import cn.nukkit.utils.BlockColor
 import net.ree_jp.simplebuilder.SimpleBuilderPlugin
@@ -90,57 +88,17 @@ class EventListener : Listener {
 
         val list = mutableListOf<BlockVector3>()
 
-        when (p.direction) {
-
-            BlockFace.NORTH -> for (index in 1..100) {
-                if (!p.hasPermission("simplebuilder.build.$index")) return null
-                val checkPos = pos.north(index)
-                val checkBl = level.getBlock(checkPos.asVector3())
-                if (checkBl.id != Block.AIR) {
-                    if (checkBl.fullId != bl.fullId) return null
-                    break
-                }
-                list.add(checkPos)
+        (1..100).forEach { index ->
+            val checkPos = nextPos(pos, index, p.direction)
+            val checkBl = level.getBlock(checkPos.asVector3())
+            if (!p.hasPermission("simplebuilder.build.$index")) return null
+            if (!isCanPlace(checkBl, bl)) {
+                if ((checkBl.fullId != bl.fullId) || list.isEmpty()) return null
+                return list
             }
-
-            BlockFace.SOUTH -> for (index in 1..100) {
-                if (!p.hasPermission("simplebuilder.build.$index")) return null
-                val checkPos = pos.south(index)
-                val checkBl = level.getBlock(checkPos.asVector3())
-                if (checkBl.id != Block.AIR) {
-                    if (checkBl.fullId != bl.fullId) return null
-                    break
-                }
-                list.add(checkPos)
-            }
-
-            BlockFace.EAST -> for (index in 1..100) {
-                if (!p.hasPermission("simplebuilder.build.$index")) return null
-                val checkPos = pos.east(index)
-                val checkBl = level.getBlock(checkPos.asVector3())
-                if (checkBl.id != Block.AIR) {
-                    if (checkBl.fullId != bl.fullId) return null
-                    break
-                }
-                list.add(checkPos)
-            }
-
-            BlockFace.WEST -> for (index in 1..100) {
-                if (!p.hasPermission("simplebuilder.build.$index")) return null
-                val checkPos = pos.west(index)
-                val checkBl = level.getBlock(checkPos.asVector3())
-                if (checkBl.id != Block.AIR) {
-                    if (checkBl.fullId != bl.fullId) return null
-                    break
-                }
-                list.add(checkPos)
-            }
-
-            else -> throw Exception("direction bad value")
+            list.add(checkPos)
         }
-
-        if (list.isEmpty()) return null
-        return list
+        throw Exception("limit is 100")
     }
 
     private fun sendBlockParticle(p: Player, pos: BlockVector3, color: BlockColor) {
@@ -163,7 +121,7 @@ class EventListener : Listener {
 
         bl.position(Position.fromObject(pos.asVector3(), level))
 
-        if ((beforeBl.id != Block.AIR) && !(beforeBl.canBeReplaced() || (bl.id == Item.SLAB && beforeBl.id == Item.SLAB))) {
+        if (!isCanPlace(beforeBl, bl)) {
             return null
         }
 
@@ -174,6 +132,22 @@ class EventListener : Listener {
         level.setBlock(bl, bl)
 
         return bl
+    }
+
+    private fun nextPos(pos: BlockVector3, int: Int, face: BlockFace): BlockVector3 {
+        return when (face) {
+
+            BlockFace.NORTH -> pos.north(int)
+            BlockFace.SOUTH -> pos.south(int)
+            BlockFace.EAST -> pos.east(int)
+            BlockFace.WEST -> pos.west(int)
+
+            else -> throw Exception("direction bad value")
+        }
+    }
+
+    private fun isCanPlace(before: Block, after: Block): Boolean {
+        return before.canBeReplaced() || ((after.id == Item.SLAB) && (before.id == Item.SLAB))
     }
 
     private fun reduceHandItem(p: Player): Boolean {
