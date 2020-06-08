@@ -15,23 +15,26 @@ import cn.nukkit.Player
 import cn.nukkit.Server
 import cn.nukkit.block.Block
 import cn.nukkit.block.BlockAir
+import cn.nukkit.block.BlockEnderChest
 import cn.nukkit.event.EventHandler
 import cn.nukkit.event.EventPriority
 import cn.nukkit.event.Listener
 import cn.nukkit.event.block.BlockPlaceEvent
 import cn.nukkit.event.player.PlayerInteractEvent
-import cn.nukkit.event.player.PlayerToggleSneakEvent
 import cn.nukkit.item.Item
 import cn.nukkit.level.Position
 import cn.nukkit.level.particle.DustParticle
 import cn.nukkit.math.BlockFace
 import cn.nukkit.math.BlockVector3
+import cn.nukkit.math.Vector3
+import cn.nukkit.scheduler.TaskHandler
 import cn.nukkit.utils.BlockColor
+import net.ree_jp.simplebuilder.SimpleBuilderPlugin
 import net.ree_jp.simplebuilder.api.SimpleBuilderAPI
 
 class EventListener : Listener {
 
-    private val cool = mutableListOf<String>()
+    private val cool = mutableMapOf<String, TaskHandler>()
 
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlace(ev: BlockPlaceEvent) {
@@ -46,12 +49,22 @@ class EventListener : Listener {
 
         if (item.count <= space.size) return
 
-        var against = ev.blockAgainst
-        cool.add(n)
-        for (pos in space) {
-            against = placeBlock(p, item, pos, against) ?: return
-        }
-        cool.remove(n)
+        val iterator = space.iterator()
+        var against: Block = ev.blockAgainst
+        val handler = Server.getInstance().scheduler.scheduleRepeatingTask(
+            SimpleBuilderPlugin.instance,
+            {
+                if (iterator.hasNext() && (against.id != Block.AIR)) {
+                    val pos = iterator.next()
+                    against = placeBlock(p, item, pos, against) ?: Block.get(Block.AIR)
+                } else {
+                    cool[n]?.cancel()
+                    cool.remove(n)
+                }
+            },
+            3
+        )
+        cool[n] = handler
     }
 
     @EventHandler
@@ -59,9 +72,8 @@ class EventListener : Listener {
         val p = ev.player
         val bl = p.inventory.itemInHand.block
         val view = ev.block.getSide(ev.face)
-        bl.x = view.x
-        bl.y = view.y
-        bl.z = view.z
+        bl.setVec(view)
+
         val space = getBuildSpace(p, bl) ?: return
 
         for (pos in space) {
@@ -170,5 +182,11 @@ class EventListener : Listener {
 
         hand.setCount(hand.count--)
         return p.inventory.setItemInHand(hand)
+    }
+
+    private fun Block.setVec(bl: Block) {
+        x = bl.x
+        y = bl.y
+        z = bl.z
     }
 }
