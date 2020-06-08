@@ -48,23 +48,31 @@ tasks {
 
 nukkit {
     name = "SimpleBuilder"
-    main = "net.ree_jp.builder.SimpleBuilderPlugin"
+    main = "net.ree_jp.simplebuilder.SimpleBuilderPlugin"
     api = listOf("1.0.0")
     author = "Ree-jp"
     description = "SimpleBuilderServerPlugin"
     website = "https://github.com/ReefNetwork/SimpleBuilder"
     version = "1.0.0"
 
-    permissions.register("simplebuilder.*")
-
     permissions {
-        "simplebuilder.*" {
+        create("simplebuilder.*") {
             description = "SimpleBuilder permission"
             default = net.minecrell.pluginyml.nukkit.NukkitPluginDescription.Permission.Default.FALSE
             children {
-                "simplebuilder.command.*" {
+                create("simplebuilder.command.*") {
                     description = "SimpleBuilder command permission"
                     default = net.minecrell.pluginyml.nukkit.NukkitPluginDescription.Permission.Default.TRUE
+                }
+                create("simplebuilder.build.*") {
+                    description = "SimpleBuilder build permission"
+                    default = net.minecrell.pluginyml.nukkit.NukkitPluginDescription.Permission.Default.TRUE
+                    children {
+                        create("simplebuilder.build.16") {
+                            description = "SimpleBuilder build limit permission"
+                            default = net.minecrell.pluginyml.nukkit.NukkitPluginDescription.Permission.Default.FALSE
+                        }
+                    }
                 }
             }
         }
