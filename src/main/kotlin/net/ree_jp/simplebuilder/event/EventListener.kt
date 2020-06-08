@@ -180,7 +180,7 @@ class EventListener : Listener {
         val hand = p.inventory.itemInHand
         if (hand.id == Item.AIR) return false
 
-        hand.setCount(hand.count--)
+        hand.setCount(hand.count - 1)
         return p.inventory.setItemInHand(hand)
     }
 
