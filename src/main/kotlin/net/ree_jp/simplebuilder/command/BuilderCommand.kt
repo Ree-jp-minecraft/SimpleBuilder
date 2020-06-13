@@ -39,7 +39,7 @@ class BuilderCommand(name: String) : Command(name) {
             return true
         }
         val api = SimpleBuilderAPI.getInstance()
-        val bool = when (args[0] ?: "Ree-jp is GOD") {
+        val bool = when (if (args.isEmpty()) "change" else args[0]) {
             "on" -> true
             "off" -> false
             else -> !api.isBuilder(sender)
